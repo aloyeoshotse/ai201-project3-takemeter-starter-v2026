@@ -57,32 +57,75 @@
 ### `label_one`
 
 **Definition:**
+news - reports something that happened or was announced, and states no opinion about it.
 
 **Example 1:**
->
+>After Star Wars: Zero Company and Galactic Racer, Lucasfilm says it will "continue to surprise folks" and is "more flexible" with the franchise
 
 **Example 2:**
->
+>Steam Wallet funds in Japan will expire after 6 months if left unused. Valve updated its Japanese Steam terms, introducing a rule that makes unused wallet funds expire six months after they’re added. There’s no confirmation that it will affect Steam users in other countries
 
 ### `label_two`
 
 **Definition:**
+question - asks the community for something, like a recommendation, a fix, or an opinion.
 
 **Example 1:**
->
+> what is your favourite unpopular game on pc ?
 
 **Example 2:**
+> Help me find the game
+
+
+### `label_three`
+
+**Definition:**
+opinion - states the poster’s own judgment, praise, or complaint, whether or not it’s tied to news.
+
+**Example 1:**
+> Razer Wolverine V4 Pro review
+
+**Example 2:**
+> Dishonored ruined other games for me lol.
+
+### `label_four`
+
+**Definition:**
+promo - a post from a developer or publisher promoting or announcing something about their own game or company, such as a release, milestone, sale, or thank-you message.
+
+**Example 1:**
+> GOOD HEAVENS! – Whimsical Fantasy Crafting RPG
+> Hey everyone! We’ve just released Good Heavens! Our journey started 5 years ago and I wanted to share this experience with you.
 >
+> What is the game about?
+>
+> So in the game, there is a clumsy god; Rar. Basically he creates a world and everything goes downhill. He picks a chosen one to fix everything, then another, then another... So yeah, we are the 25,004th chosen one. While we spawn into this world, what we need to do is survive, improve our skills, and complete the tasks.
+>
+> There is an entire procedurally generated world at your fingertips, with so many different cities and events to discover. It has a humorous and colorful tone, and you can play it either with friends or on your own. It is co-op up to eight players. You can all upgrade your techs if you want, or each of you can assign roles and play accordingly. There are 3 combat and 3 utility tech trees. It's entirely up to you how you want to customize. Also, no generative AI was used, everything was made with blood and tears of our artists.
+>
+> If you like to check our game, here is the link to our Steam page.
+>
+> Hope you’ll like it!
+
+**Example 2:**
+> The Witcher: 11 years after launch, more witchers are now walking the Path across the Continent than ever before. Seeing so many of you set out on this journey for the very first time, or relive it once more, means the world to us. Thank you for putting your trust in us, all these years later.
 
 ### The hardest boundary
 
-**Which two labels:**
+**Which two labels:** `news` and `opinion`
 
-**The decision rule I used every time:**
-<!-- e.g. "If the post names a specific checkable fact, it's `analysis`, even
-     if the tone is heated." -->
+**The post that sits between them:**
+> ‘This is horrifying’ Nvidia’s controversial DLSS 5 AI filter leaks and players are inserting it into every game
 
+It reports events (a leak, players adding the filter to games), which fits `news`. It also carries evaluative wording ("controversial", and the quoted "This is horrifying"), which fits `opinion`.
 
+**The decision rules I used every time:**
+1. `news` vs `opinion`: if the evaluative wording is in the writer's own voice ("is a disaster", "is awesome"), label it `opinion`, even when it also reports a fact. If the judgment is attributed to someone else ("according to players", a quoted reaction), the writer is only reporting it, so label it `news`. If it is still unclear, label it `opinion`.
+2. `promo` vs `news`: if the poster is the developer or publisher talking about its own game or company in the first person ("we", "our", "we've"), label it `promo`, even for patch notes or price changes. A third party reporting the same event in the third person is `news`.
+
+Applied to the examples: the Quake Champions post is `opinion` because the poster's own "It's awesome." is a judgment in their voice. The DLSS 5 headline is `opinion` because "controversial" is the writer's own wording, not attributed to anyone, and the quoted "This is horrifying" does not change that. Without "controversial" it would be `news`.
+
+I chose rules based on voice and attribution because I can check them on the text itself. I tested them with eight AI-written boundary posts: I disagreed with my first draft rule on one of them (an attributed quote, "according to players"), so I changed rule 1, and I added rule 2 after I labeled a first-person patch-notes post `news`.
 
 ---
 

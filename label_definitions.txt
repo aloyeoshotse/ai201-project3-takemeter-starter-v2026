@@ -1,10 +1,7 @@
 # Your label definitions, one per line, as `label: definition`.
-#
-# Copy these from your README so the baseline is judged on exactly the
-# definitions you wrote. baseline.py reads this file.
-#
-# Delete the examples below and put yours in.
+# Copied from the README so the baseline is judged on exactly the definitions I wrote.
 
-analysis: makes an argument backed by a specific, checkable fact
-hot_take: a confident claim with no support offered
-reaction: an immediate response to something that just happened
+news: reports something that happened or was announced, and states no opinion about it
+question: asks the community for something, like a recommendation, a fix, or an opinion
+opinion: states the poster's own judgment, praise, or complaint, whether or not it's tied to news
+promo: a post from a developer or publisher promoting or announcing something about their own game or company, such as a release, milestone, sale, or thank-you message
