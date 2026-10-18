@@ -42,6 +42,7 @@
 <!-- Your community, and what your classifier sorts posts into. Three or four
      sentences. -->
 
+TakeMeter reads a public gaming post from Reddit (r/pcgaming, r/Games, r/gamedev, r/patientgamers, r/IndieGaming and r/gamingsuggestions) and sorts it into one of four labels: `news` (reports something that happened, with no opinion), `question` (asks the community for something), `opinion` (the poster's own judgment, praise or complaint) and `promo` (a developer or publisher promoting their own game or company). A gaming feed mixes all four kinds of post, and the useful thing to know about a post is usually which kind it is, such as whether it is someone selling a game or someone reviewing one. The model is DistilBERT fine-tuned on 230 posts that I labelled using the definitions below, and it trains and runs on a laptop CPU.
 
 
 ---
@@ -205,17 +206,17 @@ of next unit's variance. -->
 
 **Moment 1**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I asked an AI assistant (Claude, in Claude Code) to show me the first 20 posts in `labels.csv` so I could label them cold.
+- *What came back:* It pointed out that the file is ordered by subreddit, so the first 20 rows would all be r/pcgaming headlines and my cold set would miss most of my labels. Instead it picked 20 rows at random with a fixed seed (201), so the sample could be repeated, and showed them to me with the long posts shortened. Later it drew 7 more at random (seed 202) from the rows I had not seen, and showed me the full text of those.
+- *What I changed:* I labelled the first 20 from the titles only, since the long posts were shortened, which was a mistake because some bodies decided the label. That is why I asked for the second set of 7 with full text. I labelled those 7 with no AI input, and together with the first 20 they give 27 rows marked `cold` in `labels.csv`.
 
 **Moment 2**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I sent the AI my labels for the first 20 posts, three of them marked "unsure", and asked it to record them in `labels.csv`. When it asked me to pick labels for the unsure ones, I asked what it would pick.
+- *What came back:* Without my asking, it pointed out that I had labelled #17, a personal review, as `opinion`, while I had labelled four similar long personal write-ups (#14, #15, #16 and #18) as `news`, which did not match my own definition of `opinion` ("the poster's own judgment, praise, or complaint"). It also gave labels for the three I was unsure about (#3 `news`, #6 `promo`, #19 `opinion`).
+- *What I changed:* I had labelled those posts from their titles only, so I changed #14, #15, #16 and #18 to `opinion` after reading the feedback. I used the AI's labels for #3, #6 and #19. Because of that I do not count those 7 rows as a clean cold check.
 
-**Pre-labelling disclosure:**
+**Pre-labelling disclosure:** 27 rows are marked `cold` in the `note` column. I labelled 24 of them myself, and the AI picked the labels for three (see Moment 2). The AI pre-labelled the other 203 rows, using my four definitions and my two decision rules from the Label Taxonomy section, and I marked those rows `pre-labelled`. It also gave a confidence and a second-choice label for each row, which I used to decide which rows to look at first. A separate AI browser tool (in my signed-in Chrome) collected the 230 posts; whole posts were copied from Reddit (see `data/collection_notes.md`). I have not yet finished reading and correcting every one of the 203 pre-labelled rows, so those labels may still contain mistakes and the notes will change to `pre-labelled, checked` as I review them. My first training run happened before that review, so `results.json` and `test_split.csv` will need to be re-run if I change any labels.
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
