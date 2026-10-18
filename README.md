@@ -55,7 +55,7 @@ TakeMeter reads a public gaming post from Reddit (r/pcgaming, r/Games, r/gamedev
      The decision rule is worth a point on its own and it's the thing most
      people leave out. Every taxonomy has a hardest boundary. Name yours. -->
 
-### `label_one`
+### `news`
 
 **Definition:**
 news - reports something that happened or was announced, and states no opinion about it.
@@ -66,7 +66,7 @@ news - reports something that happened or was announced, and states no opinion a
 **Example 2:**
 >Steam Wallet funds in Japan will expire after 6 months if left unused. Valve updated its Japanese Steam terms, introducing a rule that makes unused wallet funds expire six months after they’re added. There’s no confirmation that it will affect Steam users in other countries
 
-### `label_two`
+### `question`
 
 **Definition:**
 question - asks the community for something, like a recommendation, a fix, or an opinion.
@@ -78,7 +78,7 @@ question - asks the community for something, like a recommendation, a fix, or an
 > Help me find the game
 
 
-### `label_three`
+### `opinion`
 
 **Definition:**
 opinion - states the poster’s own judgment, praise, or complaint, whether or not it’s tied to news.
@@ -89,7 +89,7 @@ opinion - states the poster’s own judgment, praise, or complaint, whether or n
 **Example 2:**
 > Dishonored ruined other games for me lol.
 
-### `label_four`
+### `promo`
 
 **Definition:**
 promo - a post from a developer or publisher promoting or announcing something about their own game or company, such as a release, milestone, sale, or thank-you message.
@@ -124,7 +124,7 @@ It reports events (a leak, players adding the filter to games), which fits `news
 1. `news` vs `opinion`: if the evaluative wording is in the writer's own voice ("is a disaster", "is awesome"), label it `opinion`, even when it also reports a fact. If the judgment is attributed to someone else ("according to players", a quoted reaction), the writer is only reporting it, so label it `news`. If it is still unclear, label it `opinion`.
 2. `promo` vs `news`: if the poster is the developer or publisher talking about its own game or company in the first person ("we", "our", "we've"), label it `promo`, even for patch notes or price changes. A third party reporting the same event in the third person is `news`.
 
-Applied to the examples: the Quake Champions post is `opinion` because the poster's own "It's awesome." is a judgment in their voice. The DLSS 5 headline is `opinion` because "controversial" is the writer's own wording, not attributed to anyone, and the quoted "This is horrifying" does not change that. Without "controversial" it would be `news`.
+Applied to the examples: "Dishonored ruined other games for me lol." is `opinion` because the judgment is in the poster's own voice. The DLSS 5 headline is `opinion` because "controversial" is the writer's own wording, not attributed to anyone, and the quoted "This is horrifying" does not change that. Without "controversial" it would be `news`.
 
 I chose rules based on voice and attribution because I can check them on the text itself. I tested them with eight AI-written boundary posts: I disagreed with my first draft rule on one of them (an attributed quote, "according to players"), so I changed rule 1, and I added rule 2 after I labeled a first-person patch-notes post `news`.
 
@@ -135,45 +135,44 @@ I chose rules based on voice and attribution because I can check them on the tex
 <!-- Where you collected from, how you labelled, your counts, and three hard
      cases. -->
 
-**Where the posts came from:**
+**Where the posts came from:** 230 public Reddit posts from r/pcgaming, r/Games, r/gamedev, r/patientgamers, r/IndieGaming and r/gamingsuggestions. Text posts keep the full title and body; link posts keep only the Reddit title. I excluded image/video/gallery posts, crossposts, recurring moderator threads, duplicates, deleted posts and posts whose body did not load. This is a convenience sample of new posts, not a random sample of Reddit, and some r/Games posts came from its developer showcase that day (which is where most `promo` comes from). r/gamingsuggestions was added to get enough `question` posts. Details are in `data/collection_notes.md`.
 
-**How I labelled them:** <!-- Cold first? Pre-labelled with AI and corrected?
-Say so plainly — the disclosure is required, not penalised. -->
+**How I labelled them:** I labelled 27 posts cold (marked `cold` in `note`): 20 first, then 7 more with full text after I found that title-only labelling was a mistake. An AI assistant pre-labelled the other 203 using my four definitions and two decision rules (marked `pre-labelled`). Three of the cold rows took the AI's label for posts I was unsure about, and I corrected four of my own cold labels after the AI flagged that they contradicted my `opinion` definition (see How I Used AI). I have not yet finished reading and correcting every pre-labelled row, so some of those labels may still be wrong.
 
 **Counts per label:**
 
 | Label | Count | Share |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-| **Total** |  | 100% |
+| `news` | 84 | 36.5% |
+| `opinion` | 60 | 26.1% |
+| `question` | 47 | 20.4% |
+| `promo` | 39 | 17.0% |
+| **Total** | **230** | 100% |
+
+`promo` is the smallest label, as predicted in `criteria.md`. The largest-to-smallest ratio is 84/39 = 2.2x, inside my 3x limit.
 
 **Three hard cases**
 
-<!-- Any post that made you pause: what it was, which two labels it could have
-     been, and what you chose. These are worth more than the easy 190. -->
-
 **1.**
-> *The post:*
+> *The post:* "Shogun 2 remaster hits "overwhelmingly negative" reviews on Steam over AI and performance"
 >
-> *Could have been:*
+> *Could have been:* `news` or `opinion`
 >
-> *I chose, because:*
+> *I chose `news`, because:* "overwhelmingly negative" is Steam's rating label, quoted and attributed to someone else, so the writer is reporting a reaction, not giving one. Rule 1 says attributed judgment is `news`.
 
 **2.**
-> *The post:*
+> *The post:* "Do you see a future for classic game dev two years from now?" followed by a long first-person account of 15 years of programming, how AI changed it, and a prediction.
 >
-> *Could have been:*
+> *Could have been:* `question` or `opinion`
 >
-> *I chose, because:*
+> *I chose `question`, because:* the title asks the community directly and the body is context for that ask. The prediction is the poster's own view, but the post exists to start a discussion, not to state a verdict.
 
 **3.**
-> *The post:*
+> *The post:* "Wine (for Linux) might mark dgvoodoo2 as WONTFIX due to malicious and intentional sabotage by developer..." with a bug-tracker link and a long technical write-up.
 >
-> *Could have been:*
+> *Could have been:* `news` or `opinion`
 >
-> *I chose, because:*
+> *I chose `news`, because:* the "sabotage" wording is the bug report's allegation, and the post mainly reports what Wine might do and what a user found. It is close to `opinion` because of the strong wording, and I used rule 1's attribution test to decide.
 
 ---
 
@@ -181,17 +180,13 @@ Say so plainly — the disclosure is required, not penalised. -->
 
 <!-- Your starting model, your settings, and anything you changed and why. -->
 
-**Base model:**
+**Base model:** `distilbert-base-uncased` (DistilBERT), fine-tuned on CPU for four-way classification.
 
-**Settings:** <!-- epochs, learning rate, batch size, seed -->
+**Settings:** seed 42, 3 epochs, learning rate 2e-5, batch size 16, max sequence length 128 tokens. Stratified 70/15/15 split.
 
-**Anything I changed from the defaults, and why:**
+**Anything I changed from the defaults, and why:** Nothing. I kept the notebook defaults for the first run so I would have a baseline to diagnose in unit 6.
 
-**Split sizes:** <!-- train / val / test, and per-label counts in the test
-split. If a label had fewer than about 8 in test, say so — it explains a lot
-of next unit's variance. -->
-
-
+**Split sizes:** train 160 / val 35 / test 35. Test per label: `news` 13, `opinion` 9, `question` 7, `promo` 6. `question` and `promo` have fewer than about 8 test posts, so their F1 will move a lot between seeds. This first run (seed 42, before I finished reviewing the pre-labelled rows) got 0.571 accuracy and 0.343 macro F1, with `question` and `promo` both at F1 0.00.
 
 ---
 
