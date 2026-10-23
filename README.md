@@ -245,7 +245,7 @@ made it worse (0.429 vs 0.714 accuracy), because with them it predicted promo fo
 on accuracy (+0.143) but lost on macro F1 (−0.077), and against the bare-names baseline it loses on accuracy too (0.571 vs 0.714). Almost all of its 
 gain is news (0.000 → 0.812), and that gain exists mainly because the baseline over-predicted promo. My prediction was only half right: news improved most, 
 but opinion got slightly worse (−0.065), so I can’t claim the model learned my rule for that boundary. The model scored F1 0.00 on promo and question, which 
-probably means it never predicted them. With only 6–7 test posts for each, these scores are noisy, so I’ll confirm that in the confusion matrix.
+means it never predicted them, and the confusion matrix below confirms it: the `question` and `promo` columns are all zeros. These numbers are from seed 42 only, and with 6–7 test posts for each of those labels they are noisy.
 
 
 
@@ -256,11 +256,24 @@ probably means it never predicted them. With only 6–7 test posts for each, the
 <!-- Five criteria across three seeds. The notebook's section 6 prints the
      spread table; the Target and Verdict columns are yours. -->
 
+Spread across three seeds (section 6 of the notebook). All three seeds ran on CPU (torch 2.14.1+cu130, max length 128):
+
+| Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
+|---|---|---|---|---|
+| Overall accuracy | 0.571 | 0.657 | 0.543 | 0.114 |
+| Macro F1 | 0.343 | 0.510 | 0.332 | 0.178 |
+| F1 — `news` | 0.812 | 0.788 | 0.828 | 0.040 |
+| F1 — `question` | 0.000 | 0.824 | 0.000 | 0.824 |
+| F1 — `opinion` | 0.560 | 0.429 | 0.500 | 0.131 |
+| F1 — `promo` | 0.000 | 0.000 | 0.000 | 0.000 |
+
+Accuracy swings 0.114 across seeds, which is over the ten-point line, so this dataset is too small for a stable measure. The `question` score is the clearest case: 0.000, 0.824, 0.000. Seed 7 happened to predict it and the other two seeds never did.
+
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.70 on every seed | 0.571 | 0.657 | 0.543 | MISSED |
+| 2. Every label F1 | ≥ 0.55 on every seed | lowest 0.000 (`question`, `promo`) | lowest 0.000 (`promo`) | lowest 0.000 (`question`, `promo`) | MISSED |
+| 3. Balance | smallest label ≥ 10% and largest ≤ 3× smallest | 17.0% (`promo`), 2.2× | same | same | MET |
 | 4.  |  |  |  |  |  |
 | 5.  |  |  |  |  |  |
 
@@ -269,16 +282,15 @@ probably means it never predicted them. With only 6–7 test posts for each, the
 <!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
      An image of a matrix earns nothing. -->
 
-| true \ predicted |  |  |  |
-|---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
+| true \ predicted | news | question | opinion | promo |
+|---|---|---|---|---|
+| **news** | 13 | 0 | 0 | 0 |
+| **question** | 2 | 0 | 5 | 0 |
+| **opinion** | 2 | 0 | 7 | 0 |
+| **promo** | 2 | 0 | 4 | 0 |
 
 **My biggest off-diagonal number, and what it means:**
-<!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
-     direction. "7 real analysis posts were called hot_take and only 3 went the
-     other way" is a direction, not just an error rate. -->
+5 of the 7 `question` posts were called `opinion` and none went the other way, so on seed 42 the model never learned `question` (or `promo`) and sent nearly everything to `opinion` or `news`.
 
 
 
@@ -291,9 +303,9 @@ probably means it never predicted them. With only 6–7 test posts for each, the
 
 | # | Criterion | Target | Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
+| 1 | Overall accuracy | ≥ 0.70 on every seed | MISSED | Seeds scored 0.571, 0.657 and 0.543. All three are below 0.70, and the best is 0.043 short. |
+| 2 | Every label F1 | ≥ 0.55 on every seed | MISSED | `promo` scored F1 0.000 on all three seeds. `question` scored 0.000 on seeds 42 and 2024 and 0.824 on seed 7. |
+| 3 | Balance | smallest label ≥ 10% and largest ≤ 3× smallest | MET | `promo` is 39 of 230 posts (17.0%) and the largest label (`news`, 84) is 2.2× the smallest. |
 | 4 |  |  |  |  |
 | 5 |  |  |  |  |
 
@@ -307,6 +319,10 @@ probably means it never predicted them. With only 6–7 test posts for each, the
      ⚠️ Use your agreement report as evidence. It is the only instrument you
      have that can tell a LABELLING problem from a MODEL problem, and this
      section is graded on whether you used it that way. -->
+
+**Criterion 2 (every label F1 ≥ 0.55): too few examples for `promo` and `question`.** `promo` has 39 posts and `question` has 47, so the 160-post training split holds about 27 and 33 of them, and the test split holds 6 and 7. The confusion matrix shows the model never predicted either label on seed 42. `promo` was 0.000 on all three seeds, and `question` was 0.000, 0.824 and 0.000. A label that flips between 0 and 0.82 across seeds is near the edge of being learnable. The training run is also short: 160 posts at batch size 16 is 10 steps per epoch, so 3 epochs is only 30 updates, and I suspect the model never moved off predicting the two biggest labels. The zero-shot baseline did score 0.348 on `promo` and 0.706 on `question`, so the labels are learnable in principle, and it is my training data that is too small. I haven't yet checked this against the agreement report, so I can't rule out that I applied the `promo` and `question` boundaries inconsistently.
+
+**Criterion 1 (accuracy ≥ 0.70): follows from the criterion 2 miss.** On seed 42, a model that predicts only `news` and `opinion` can get at most (13 + 9) / 35 = 0.629 right, because 13 of the 35 test posts are `question` or `promo`. Seed 7 got 0.657 when it recovered `question`. So the accuracy target can't be met until the model predicts the two small labels, and fixing criterion 2 is the way to fix this one.
 
 
 
