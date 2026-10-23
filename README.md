@@ -227,18 +227,25 @@ I chose rules based on voice and attribution because I can check them on the tex
 
 | Measure | Baseline | Trained | Difference |
 |---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
+| Overall accuracy | 0.429 | 0.571 | +0.143 |
+| Macro F1 | 0.420 | 0.343 | -0.077 |
+| F1 — `news` | 0.000 | 0.812 | +0.812 |
+| F1 — `opinion` | 0.625 | 0.560 | -0.065 |
+| F1 — `promo` | 0.348 | 0.000 | -0.348 |
+| F1 — `question` | 0.706 | 0.000 | -0.706 |
 
 **What I predicted before I looked:**
-<!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
-     prediction made afterwards isn't one. -->
+I predict my fine-tuned model will beat the zero-shot baseline most on opinion vs news, because my labels follow quirks of my own rules 
+(a headline like “Razer Wolverine V4 Pro review” counts as opinion, and unclear cases default to opinion), and a zero-shot model that 
+sees only my definitions can’t learn those quirks.
 
 **What the gap actually means:**
-<!-- If the baseline matched your trained model, your fine-tuning added
-     nothing — and that is a real finding, not a failure. Say it plainly. -->
+I compared against the zero-shot baseline using my definitions, and also ran it once with bare label names: the definitions 
+made it worse (0.429 vs 0.714 accuracy), because with them it predicted promo for 17 of 35 posts. My fine-tuned model beat the definitions baseline 
+on accuracy (+0.143) but lost on macro F1 (−0.077), and against the bare-names baseline it loses on accuracy too (0.571 vs 0.714). Almost all of its 
+gain is news (0.000 → 0.812), and that gain exists mainly because the baseline over-predicted promo. My prediction was only half right: news improved most, 
+but opinion got slightly worse (−0.065), so I can’t claim the model learned my rule for that boundary. The model scored F1 0.00 on promo and question, which 
+probably means it never predicted them. With only 6–7 test posts for each, these scores are noisy, so I’ll confirm that in the confusion matrix.
 
 
 
