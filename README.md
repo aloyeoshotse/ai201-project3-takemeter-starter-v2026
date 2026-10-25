@@ -274,8 +274,8 @@ Accuracy swings 0.114 across seeds, which is over the ten-point line, so this da
 | 1. Overall accuracy | ≥ 0.70 on every seed | 0.571 | 0.657 | 0.543 | MISSED |
 | 2. Every label F1 | ≥ 0.55 on every seed | lowest 0.000 (`question`, `promo`) | lowest 0.000 (`promo`) | lowest 0.000 (`question`, `promo`) | MISSED |
 | 3. Balance | smallest label ≥ 10% and largest ≤ 3× smallest | 17.0% (`promo`), 2.2× | same | same | MET |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 4. Agreement with staff | ≥ 24 of 30 (0.80) | 29 / 30 (0.97) | same | same | MET |
+| 5. Confidence | ≥ 85% correct when confidence ≥ 0.80, and mean confidence higher on correct than on wrong | 0 predictions ≥ 0.80 (max 0.487); mean 0.370 right vs 0.307 wrong | 0 predictions ≥ 0.80 (max 0.427); 0.338 vs 0.304 | 0 predictions ≥ 0.80 (max 0.345); 0.323 vs 0.287 | MISSED |
 
 ### Confusion matrix
 
@@ -306,8 +306,8 @@ Accuracy swings 0.114 across seeds, which is over the ten-point line, so this da
 | 1 | Overall accuracy | ≥ 0.70 on every seed | MISSED | Seeds scored 0.571, 0.657 and 0.543. All three are below 0.70, and the best is 0.043 short. |
 | 2 | Every label F1 | ≥ 0.55 on every seed | MISSED | `promo` scored F1 0.000 on all three seeds. `question` scored 0.000 on seeds 42 and 2024 and 0.824 on seed 7. |
 | 3 | Balance | smallest label ≥ 10% and largest ≤ 3× smallest | MET | `promo` is 39 of 230 posts (17.0%) and the largest label (`news`, 84) is 2.2× the smallest. |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 4 | Agreement with staff | ≥ 24 of 30 (0.80) | MET | I agreed with staff on 29 of 30 posts (97%). The one miss was post 8. This criterion doesn't depend on the training seed. |
+| 5 | Confidence | ≥ 85% correct when confidence ≥ 0.80, and mean confidence higher on correct than on wrong | MISSED | The second half held on all three seeds (right vs wrong: 0.370/0.307, 0.338/0.304, 0.323/0.287). The first half failed: I re-ran the three seeds and counted, and no prediction reached 0.80 on any seed (highest 0.487, 0.427, 0.345), so there was no confident subset to be 85% right. |
 
 **Diagnoses**
 
@@ -320,7 +320,13 @@ Accuracy swings 0.114 across seeds, which is over the ten-point line, so this da
      have that can tell a LABELLING problem from a MODEL problem, and this
      section is graded on whether you used it that way. -->
 
-**Criterion 2 (every label F1 ≥ 0.55): too few examples for `promo` and `question`.** `promo` has 39 posts and `question` has 47, so the 160-post training split holds about 27 and 33 of them, and the test split holds 6 and 7. The confusion matrix shows the model never predicted either label on seed 42. `promo` was 0.000 on all three seeds, and `question` was 0.000, 0.824 and 0.000. A label that flips between 0 and 0.82 across seeds is near the edge of being learnable. The training run is also short: 160 posts at batch size 16 is 10 steps per epoch, so 3 epochs is only 30 updates, and I suspect the model never moved off predicting the two biggest labels. The zero-shot baseline did score 0.348 on `promo` and 0.706 on `question`, so the labels are learnable in principle, and it is my training data that is too small. I haven't yet checked this against the agreement report, so I can't rule out that I applied the `promo` and `question` boundaries inconsistently.
+**Criterion 2 (every label F1 ≥ 0.55): too few examples for `promo` and `question`.** `promo` has 39 posts and `question` has 47, so the 160-post training split holds about 27 and 33 of them, and the test split holds 6 and 7. The confusion matrix shows the model never predicted either label on seed 42. `promo` was 0.000 on all three seeds, and `question` was 0.000, 0.824 and 0.000. A label that flips between 0 and 0.82 across seeds is near the edge of being learnable. The training run is also short: 160 posts at batch size 16 is 10 steps per epoch, so 3 epochs is only 30 updates, and I suspect the model never moved off predicting the two biggest labels. The zero-shot baseline did score 0.348 on `promo` and 0.706 on `question`, so the labels are learnable in principle, and it is my training data that is too small.
+
+The agreement report can't confirm or rule out a labelling problem on these two labels, because it used the staff taxonomy (`analysis`, `hot_take`, `reaction`) and not my four labels. It does show I can apply a written rule consistently: I matched staff on 29 of 30 posts, and my one miss was loose application of the Rule 1 fact-versus-flourish test, not a confusion between two labels. That makes "I applied the boundaries inconsistently" less likely, but it doesn't test my `question` and `promo` boundaries. The confusion matrix points to the model, not my boundaries: the misses go to `opinion` and `news` in one direction only, 5 of 7 `question` and 4 of 6 `promo` posts to `opinion` on seed 42, and all 7 `question` posts to `opinion` on seed 2024. If my `question`/`opinion` boundary were inconsistent I'd expect `opinion` posts to be called `question` too, and none were on seeds 42 and 2024. One thing I can't rule out: 203 of my 230 labels were AI pre-labelled and I only reviewed them, and only 27 were labelled cold. If the pre-labelling applied the `promo` boundary differently from how I'd have applied it, that would be a labelling problem the agreement report didn't test.
+
+**Cause: too few examples for `promo` and `question`, and a short training run.** Evidence: F1 of 0.000 on `promo` on all three seeds, `question` flipping between 0.000 and 0.824, one-directional misses in the matrix, and a baseline that scores both labels above zero. This is a model and data-size problem, and I have not ruled out the pre-labelling caveat above.
+
+**Criterion 5 (confidence ≥ 0.80 and 85% right): the model is never that sure, a symptom of too little training.** The highest confidence on any seed was 0.487, 0.427 and 0.345. With four labels, 0.25 is the floor for the top class, so seed 2024's best prediction was barely above a uniform guess. The training run is 30 updates (160 training posts at batch size 16 is 10 steps an epoch, for 3 epochs), and I suspect the model hasn't moved far from where it started, though I haven't tested that. The confidence is directionally meaningful: it is higher on correct predictions than wrong ones on all three seeds (0.370 vs 0.307, 0.338 vs 0.304, 0.323 vs 0.287), and the most-confident third of predictions was 1.000, 0.818 and 0.909 correct. So the ordering is useful, but the values never get high enough to hit an absolute 0.80 threshold. I'd call this a symptom of the same cause as criterion 2, not a separate problem, and I haven't checked it against the agreement report because that measures my labelling, not the model's confidence. The threshold itself may also have been set too high for a model this lightly trained, but I'm not revising it: it stays as written, and I'll see whether it moves after the fix.
 
 **Criterion 1 (accuracy ≥ 0.70): follows from the criterion 2 miss.** On seed 42, a model that predicts only `news` and `opinion` can get at most (13 + 9) / 35 = 0.629 right, because 13 of the 35 test posts are `question` or `promo`. Seed 7 got 0.657 when it recovered `question`. So the accuracy target can't be met until the model predicts the two small labels, and fixing criterion 2 is the way to fix this one.
 
@@ -375,21 +381,25 @@ Accuracy swings 0.114 across seeds, which is over the ten-point line, so this da
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** One hyperparameter: `EPOCHS` from 3 to 10. Nothing else changed: same `labels.csv`, same learning rate (2e-5), batch size (16), max length (128), seeds (42, 7, 2024) and splits. That takes training from 30 updates to 100. I ran it with a standalone copy of the notebook's training code and wrote `results_three_seeds_after.json`, so `results_three_seeds_before.json` is untouched.
 
-**Which diagnosis pointed at it:**
+**Which diagnosis pointed at it:** The criterion 2 and criterion 5 diagnoses. Both blamed a short training run (30 updates) together with too few `promo` and `question` examples: `promo` F1 was 0.000 on all three seeds and no prediction ever reached 0.80 confidence. More epochs is the cheapest way to test whether the model was under-trained, and it doesn't touch my labels.
 
 ### Run Log — After
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.70 on every seed | 0.800 | 0.886 | 0.914 | MET |
+| 2. Every label F1 | ≥ 0.55 on every seed | lowest 0.625 (`question`) | lowest 0.714 (`opinion`) | lowest 0.875 (`opinion`) | MET |
+| 3. Balance | smallest label ≥ 10% and largest ≤ 3× smallest | 17.0% (`promo`), 2.2× | same | same | MET |
+| 4. Agreement with staff | ≥ 24 of 30 (0.80) | 29 / 30 (0.97) | same | same | MET |
+| 5. Confidence | ≥ 85% correct when confidence ≥ 0.80, and mean confidence higher on correct than on wrong | 6 / 6 correct at ≥ 0.80; mean 0.659 right vs 0.472 wrong | 7 / 7 correct; 0.705 vs 0.671 | 11 / 12 correct (92%); 0.696 right vs 0.704 wrong | MISSED |
 
-**Did it help, and how do I know:**
+**Did it help, and how do I know:** Yes, a lot. Accuracy went from 0.571 / 0.657 / 0.543 to 0.800 / 0.886 / 0.914, and the lowest label F1 went from 0.000 to 0.625 or better on every seed, so criteria 1 and 2 are now MET. `promo` F1 went from 0.000 on all three seeds to 0.800, 1.000 and 0.909, and `question` went from 0.000, 0.824, 0.000 to 0.625, 0.875, 0.933. That supports the diagnosis that the model was under-trained, and that the `promo` and `question` labels were learnable all along. It also makes a labelling problem on those two labels less likely, though it doesn't rule one out for `opinion`.
+
+Criterion 5 is still MISSED, but only on seed 2024, and by very little. The 0.80 half now holds on every seed (100%, 100% and 92% correct). The second half failed on seed 2024, where mean confidence on wrong predictions (0.704) was higher than on correct ones (0.696). That gap is 0.008 on a 35-post test split with 3 wrong predictions, so it's well inside the noise, but the target says every seed and I'm not revising it.
+
+Two limits on this result. First, the test split is 35 posts, so one post is about 3 points of accuracy, and seed-to-seed spread is still wide (0.800 to 0.914). Second, I only tried one setting. I didn't tune the number of epochs, so I don't know whether 10 is the best choice.
 
 <!-- If it didn't, say so. Relabelling that didn't help is a genuinely
      interesting result and earns full credit. -->
@@ -401,6 +411,13 @@ Accuracy swings 0.114 across seeds, which is over the ten-point line, so this da
 ## What's Still Broken
 
 <!-- For each criterion still missed: what you'd do, and why you stopped. -->
+
+**Criterion 5 (confidence ≥ 0.80 and 85% right, with higher confidence on right than wrong): missed on seed 2024 only.** After the fix, 100%, 100% and 92% of the predictions at 0.80 or higher were correct, so the first half holds on every seed. The second half failed on seed 2024, where wrong predictions averaged 0.704 confidence and correct ones 0.696. That is 3 wrong predictions out of 35 and a gap of 0.008, so I can't tell this from noise. I stopped because the next step is more test data, not another change: with 35 test posts, I can't show whether the model's confidence ordering is real on a seed with only 3 errors. If I had more time I'd collect another 100 or so posts so the held-out split is large enough that a gap of 0.008 either means something or clearly doesn't. I'd also add a check on the validation split before trusting any single seed. I did not lower the 0.80 threshold or the 85% target.
+
+**`opinion` is my weakest label even though it passes criterion 2.** Its F1 is 0.706, 0.714 and 0.875 across the three seeds, against 0.80 or higher for `promo` and `news` on every seed. That clears the 0.55 target, so it isn't a miss, but it is what I'd fix next. After the 10-epoch run, the `opinion` errors go to `news` (2 posts on seeds 7 and 2024) and `question` (3 posts on seed 42, 2 on seed 7).
+
+**The gap between what I meant my labels to capture and what the model learned:**
+I defined `opinion` as a judgment, praise or complaint "whether or not it's tied to news", and `question` as asking for "a recommendation, a fix, or an opinion", so a post asking what people think is an `opinion` post phrased as a `question`, and my own definitions overlap. The matrix shows the model finds exactly that boundary hard: on seed 42, 3 of 9 `opinion` posts were called `question`, and on seeds 7 and 2024 `opinion` posts went to `news`, which matches the headline-with-a-take case I flagged in `criteria.md` as the hardest to write down.
 
 
 
