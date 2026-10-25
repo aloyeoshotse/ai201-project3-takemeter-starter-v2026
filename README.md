@@ -336,7 +336,7 @@ Accuracy swings 0.114 across seeds, which is over the ten-point line, so this da
      data/staff_taxonomy.md, not your own — so every argument below is made
      from those definitions and those decision rules. -->
 
-**Agreement rate:** ___ / 30 = ___%
+**Agreement rate:** 29 / 30 = 97%
 
 <!-- Nobody grades this number. A 60% who argues every disagreement from the
      stated rules beats a 95% who wrote "staff was right" nine times. Several
@@ -359,24 +359,15 @@ Accuracy swings 0.114 across seeds, which is over the ten-point line, so this da
      what you did across your own 200. -->
 
 **1.**
-> *The post:*
+> *The post:* "Went back through the club results going back to 2012. Every single year the number of people who enter the spring marathon and don't start it sits between 18 and 23 percent. It's not a bad-luck year, it's the base rate."
 >
-> *Staff said / I said:*
+> *Staff said / I said:* Staff said `analysis`; I said `hot_take`.
 >
-> *My call, and why:*
+> *My call, and why:* Staff is right. Rule 1 asks whether the checkable fact carries the argument. Here it does: the 2012 span and the 18-23% range are the evidence, and the closing line ("it's the base rate") only follows from them. The numbers are not decoration on a conclusion the writer had already reached, which is what makes a `hot_take` with a statistic in it. I read "every single year" as emphasis and didn't check whether the data was doing the work.
 >
-> *Which pile:*
+> *Which pile:* (a). The rule covered it and I applied it loosely.
 
-**2.**
-> *The post:*
->
-> *Staff said / I said:*
->
-> *My call, and why:*
->
-> *Which pile:*
-
-**What the pattern in my disagreements tells me:**
+**What the pattern in my disagreements tells me:** I only disagreed on one post, but it matches a pattern in how I labelled. When I reviewed the five posts I was unsure about (1, 2, 4, 7 and 10), I moved three of them (4, 7 and 10) from `hot_take` or `reaction` to `analysis`, so my first pass leaned that way when a post argued from its own data. Post 8 is the same mistake: I let confident wording ("every single year", "it's not a bad-luck year") outweigh the fact that the numbers were the argument. If I did this on my own 200 posts, some of my `opinion` labels may be posts that actually argue from a specific fact.
 
 
 
